@@ -1,6 +1,6 @@
-from __init__ import *
+from packages import *
+from Helpers import *
 
-from move_motor import move_to_angle
 
 # Change starting angle of motor
 angle = -25

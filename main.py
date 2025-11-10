@@ -1,5 +1,5 @@
-from __init__ import *
-from move_motor import move_to_angle
+from packages import *
+from Helpers import *
 
 # ==== PID Controller Class ====
 class PID:
@@ -24,15 +24,13 @@ class PID:
     
     def update(self, error: float) -> tuple[float, float, float]:
         '''
-        Returns a tuple of `(P, I, D)` values for an error `error`
-        \n`get_integrand()` and `get_derivative()` implemented here
+        Returns `tuple[P, I, D]` values for an error `error`
         '''
         
         P = self.Kp * error
         
-        MAX_INTEGRAL = 20
         self.integral += error * self.dt
-        self.integral = max(min(self.integral, MAX_INTEGRAL), -MAX_INTEGRAL)
+        self.integral = max(min(self.integral, max_integral), -max_integral)
         I = self.integral * self.Ki
         
         D = self.Kd * (error - self.prev_error) / self.dt
@@ -59,7 +57,8 @@ def update_target_location(pid: PID):
 target = 25 # target position: cm from detector
 target_error = 1.0 # 'allowed' error from target: cm
 
-MAX_ANGLE = 40 # deg
+max_angle = 40 # deg
+max_integral = 20
 
 # PID coefficients
 
@@ -118,7 +117,7 @@ if __name__ == '__main__':
                 error = get_error(current_distance, pid.target) # positive error needs beam angle to be positive (therefore beam goes down)
                 P, I, D = pid.update(error)
                 angle = P + I + D
-                angle = max(min(angle, MAX_ANGLE), -MAX_ANGLE)
+                angle = max(min(angle, max_angle), -max_angle)
                 #print(f'Error: {error}, Angle: {angle}, P: {P}, I: {I}, D: {D}')
                 move_to_angle(angle)
                 #sleep_ms(10)

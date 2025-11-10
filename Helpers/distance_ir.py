@@ -1,4 +1,4 @@
-from micros_lab import *
+from packages import *
 
 # ==== Distance sensor logic ====
 ir_sensor_timing_budget_in_ms = 40

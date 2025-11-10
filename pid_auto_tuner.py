@@ -1,8 +1,13 @@
-from __init__ import *
+from packages import *
+from Helpers import *
+
 from main import PID, get_error
-from move_motor import move_to_angle
 
 class PIDAutoTuner:
+    '''
+    Auto Tuner for the physical system, allows for calculation of the optimal Kp, Ki and Kd.
+    \nReturns `tuple[Ku, Tu]` based on the `Ziegler-Nichols Method`
+    '''
     def __init__(self, pid, target: float, max_angle: int = 35):
         self.pid = pid
         self.move_fn = move_to_angle
@@ -10,7 +15,7 @@ class PIDAutoTuner:
         self.target = target
         self.MAX_ANGLE = max_angle
 
-    def find_ultimate_gain(self):
+    def find_ultimate_gain(self) -> tuple[float, float] | tuple[None, None]:
         Kp = 0.1
         Ki = 0
         Kd = 0
@@ -34,7 +39,7 @@ class PIDAutoTuner:
         
         return None, None
 
-    def run_test(self, duration: float = 5.0):
+    def run_test(self, duration: float = 5.0) -> bool:
         start = ticks_ms()
         history = []
 
@@ -50,14 +55,14 @@ class PIDAutoTuner:
         
         return self.check_oscillations(history)
 
-    def check_oscillations(self, err_list):
+    def check_oscillations(self, err_list) -> bool:
         # crude: detect sign changes in error to see if oscillating
         signs = [e > 0 for e in err_list]
-        crossings = sum(signs[i] != signs[i-1] for i in range(1, len(signs)))
+        crossings = sum(signs[i] != signs[i - 1] for i in range(1, len(signs)))
         
-        return crossings > 4  # more than 2 oscillations
+        return crossings > 4 # more than 2 oscillations
 
-    def estimate_period(self, err_list):
+    def estimate_period(self, err_list) -> float:
         # crude period estimate from zero-crossings
         zero_crossings = []
         for i in range(1, len(err_list)):

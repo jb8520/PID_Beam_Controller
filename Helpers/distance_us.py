@@ -1,4 +1,4 @@
-from micros_lab import *
+from packages import *
 
 # ==== Distance sensor logic ====
 # Trigger ultrasonic pulse pin
@@ -10,6 +10,7 @@ echo = Pin(3, mode = Pin.IN)
 def get_distance_us() -> float:
     '''
     Returns the measured distance from the (ultrasonic) sensor to the cart
+    \n Takes the speed of sound in air to be `340.0 m/s`
     \n Raises `ValueError` if measured distance exceeds its maximum value
     '''
 
@@ -39,6 +40,8 @@ def get_distance_us() -> float:
         raise ValueError('Measured distance is off the beam.')
         
     return distance
+
+
 
 if __name__ == '__main__':
     print(get_distance_us())
